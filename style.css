@@ -1,0 +1,43 @@
+body {
+    margin: 0;
+    background-color: #363339;
+    font-family: "Montserrat", sans-serif;
+}
+
+div {
+    padding: 15px
+}
+
+input {
+    width: 100%;
+    border: 0px;
+    border-radius: 25px;
+    outline:  none;
+    min-height: 64px;
+
+    background-color: transparent;
+    color: white;
+
+    font-size: 32px;
+    font-family: "Montserrat", sans-serif;
+}
+
+::placeholder {
+    color: white;
+    opacity: 0.5;
+  }
+
+footer {
+    color: white;
+    position: fixed;
+    bottom: 0;
+    padding: 15px;
+}
+
+a {
+    color:white;
+}
+
+a:visited {
+    color:white;
+}
