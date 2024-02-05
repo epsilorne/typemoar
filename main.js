@@ -1,26 +1,27 @@
+var wordsToGenerate = 10;
+
 var wordDatabase;
 var timer;
 
 // Shorthand for the input field element
 var inputField;
 
-var testStarted = false;
-var testEnded = false;
-var wordsToGenerate = 10;
+var testStarted;
+var testEnded;
 
 // An array containing all characters (words) to be typed
-var words = [];
+var words;
 
 // The current word to be typed
 var targetWord;
-var currentIndex = 0;
+var currentIndex;
 
 // Test stats
-var totalTime = 0;
-var totalMistakes = 0;
-var uncorrectedMistakes = 0;
-var correctCharacters = 0;
-var grossWPM = 0;
+var totalTime;
+var totalMistakes;
+var uncorrectedMistakes;
+var correctCharacters;
+var grossWPM;
 
 
 // Gets the 10,000 word list and places it into an array, though it's janky
@@ -53,7 +54,7 @@ function prepareTest(){
 function finishTest(){
     testEnded = true;
     inputField.prop("value", null);
-    inputField.prop("disabled", "true");
+    inputField.prop("disabled", true);
 
     // Stop the timer
     clearTimeout(timer);
@@ -65,7 +66,8 @@ function finishTest(){
     var seconds = totalTime / 10;
 
     grossWPM = Math.round((charaCount / 5) / (seconds / 60));
-    alert(`Gross WPM: ${grossWPM}\nAccuracy: ${acc}%\nTime: ${seconds}"`);
+    var results = `Gross WPM: ${grossWPM}<br>Accuracy: ${acc}%<br>Time: ${seconds}"<br><a onclick="setupTest()" href="#">Retry</a>`;
+    $("#targetText").prop("innerHTML", results);
 }
 
 // Cycles to the next word
@@ -76,8 +78,31 @@ function nextWord(){
     }
 }
 
-function countUncorrectedMistakes(){
+// Restarts all test-related variables, generates words
+// and awaits user input
+function setupTest(){
+    words = [];
+    testStarted = false;
+    testEnded = false;
+    currentIndex = 0;
 
+    totalTime = 0;
+    totalMistakes = 0;
+    uncorrectedMistakes = 0;
+    correctCharacters = 0;
+    grossWPM = 0;
+
+    inputField.prop("disabled", false);
+    inputField.prop("placeholder", "begin typing...");
+    inputField.focus();
+    
+    // Disable event handlers so we don't make new ones when restarting
+    inputField.off("input");
+    inputField.off("keypress");
+
+    prepareCurrentWords();
+    prepareTest();
+    checkForInputs();
 }
 
 // Start and update the timer every millisecond
@@ -86,16 +111,13 @@ function updateTimer(){
     timer = setTimeout(updateTimer, 100);
 }
 
-// Intialisation & character checking
+// Intialisation
 $(document).ready(function(){  
     inputField = $("#inputField");
     inputField.focus();
 
     prepareWordsArray();
-    prepareCurrentWords();
-    prepareTest();
-
-    checkForInputs();
+    setupTest();
 })
 
 // Required to check user inputs for the input-field
