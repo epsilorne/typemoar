@@ -10,18 +10,14 @@ var wordsToGenerate = 10;
 // An array containing all characters (words) to be typed
 var targetWords = [];
 
-// String representation of the above array
-var targetSentence;
-
 // The current word to be typed
 var targetWord;
 var targetIndex = 0;
 
-
-
-// Total mistakes made
+// Test stats
 var totalMistakes = 0;
-
+var correctCharacters = 0;
+var grossWPM;
 
 
 // Gets the 10,000 word list and places it into an array, though it's janky
@@ -39,8 +35,7 @@ function prepareCurrentWords(){
     for(let i = 0; i < wordsToGenerate; i++){
         targetWords.push(returnRandomWord());
     }
-    targetSentence = targetWords.join(" ");
-    $("#targetText").prop("innerHTML", targetSentence);
+    $("#targetText").prop("innerHTML", targetWords.join(" "));
 }
 
 // Return a random word from the big array
@@ -56,7 +51,11 @@ function finishTest(){
     testEnd = true;
     inputField.prop("value", null);
     inputField.prop("disabled", "true");
-    alert("Finished!");
+
+    // Calculating results
+    var charaCount = targetWords.join("").length;
+    var accuracy = Math.round(((charaCount - totalMistakes) / charaCount) * 100);
+    alert("Finished! Accuarcy: " + accuracy + "%");
 }
 
 // Cycles to the next word
@@ -75,59 +74,78 @@ $(document).ready(function(){
     prepareWordsArray();
     prepareCurrentWords();
     prepareTest();
+
+    checkForInputs();
 })
 
-// Once we start typing, switch focus to the typing field to begin the test
-$(document).keypress(function(e){
-    console.log("curent word: " + targetWord + " with mistakes: " + totalMistakes);
-    
-    inputField.focus()
-    
-    if(!testStart){
-        testStart = true;
-    }
-
-    if(!testEnd){
+// Required to check user inputs for the input-field
+function checkForInputs(){   
+    // Once we start typing, switch focus to the typing field to begin the test
+    $("#inputField").on("input", function(){
         var currentInput = inputField.prop("value");
-        var index = currentInput.length - 1;
-    
-        // When the space key is pressed, move to the next word ONLY IF the user
-        // has at least typed one character
-        if(e.key === " "){
-            if(currentInput.length > 0){
-                // Add the difference in length to the total mistakes (will be 0 if correct length ofc)
-                totalMistakes += Math.abs(currentInput.length - targetWord.length);
-                inputField.prop("value", null);
 
-                if(targetIndex == wordsToGenerate - 1){
-                    finishTest();
+        console.log("curent word: " + targetWord + " with mistakes: " + totalMistakes);
+        
+        inputField.focus()
+        
+        if(!testStart){
+            testStart = true;
+        }
+
+        if(!testEnd){
+            var index = currentInput.length - 1;
+        
+            // When the space key is pressed, move to the next word ONLY IF the user
+            // has at least typed one character
+            if(currentInput.charAt(index) === " "){
+                if(currentInput.length > 1){
+                    // If the user has typed the word too short, add the number of
+                    // missing characters to totalMistakes
+                    if(currentInput.length < targetWord.length){
+                        totalMistakes += targetWord.length - currentInput.length + 1;
+                    }
+                    inputField.prop("value", null);
+
+                    // Finish the test if we're on the last word, otherwise cycle thru
+                    if(targetIndex == wordsToGenerate - 1){
+                        finishTest();
+                    }
+                    else{
+                        nextWord();
+                    }
+            
+                    // This prevents the space from being entered into the input field
+                    return false;
                 }
                 else{
-                    nextWord();
+                    // This prevents the space from being entered into the input field
+                    return false;
                 }
-        
-                // This prevents the space from being entered into the input field
-                return false;
             }
             else{
-                // This prevents the space from being entered into the input field
-                return false;
+                var inputChar = currentInput.charAt(index);
+                var targetChar = targetWord.charAt(index);
+        
+                if(inputChar != targetChar){
+                    totalMistakes++;
+                    console.log(inputChar + "' doesn't match with '" + targetChar + "'.")
+                }
+                else{
+                    correctCharacters++;
+                }
+
+                // If the user has typed the last word correctly, automatically finish the test
+                if(currentInput == targetWord && targetIndex == wordsToGenerate - 1){
+                    finishTest();
+                }
             }
         }
-        else{
-            var inputChar = currentInput.charAt(index);
-            var targetChar = targetWord.charAt(index);
+    })
     
-            if(inputChar != targetChar){
-                totalMistakes++;
-            }
-
-            console.log(currentInput + " and " + targetWord);
-
-            // If the user has typed the last word correctly, automatically finish the test
-            if(currentInput == targetWord && targetIndex == wordsToGenerate - 1){
-                finishTest();
-            }
+    // Prevent the user from pressing space in an empty field
+    $("#inputField").on("keypress", function(e){
+        if(inputField.prop("value").length < 1 && e.key == " "){
+            return false;
         }
-    }
-})
+    })
+}
