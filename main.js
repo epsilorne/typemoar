@@ -1,23 +1,26 @@
-var wordsArray;
+var wordDatabase;
+var timer;
 
 // Shorthand for the input field element
 var inputField;
 
-var testStart = false;
-var testEnd = false;
+var testStarted = false;
+var testEnded = false;
 var wordsToGenerate = 10;
 
 // An array containing all characters (words) to be typed
-var targetWords = [];
+var words = [];
 
 // The current word to be typed
 var targetWord;
-var targetIndex = 0;
+var currentIndex = 0;
 
 // Test stats
+var totalTime = 0;
 var totalMistakes = 0;
+var uncorrectedMistakes = 0;
 var correctCharacters = 0;
-var grossWPM;
+var grossWPM = 0;
 
 
 // Gets the 10,000 word list and places it into an array, though it's janky
@@ -26,44 +29,61 @@ function prepareWordsArray(){
     xmlHttp.open("GET", "https://raw.githubusercontent.com/epsilorne/typemoar/main/words.txt", false);
     xmlHttp.send();
     if(xmlHttp.status == 200){
-        wordsArray = xmlHttp.responseText.split("\n");
+        wordDatabase = xmlHttp.responseText.split("\n");
     }
 }
 
 // Randomly generates a given number of words as an array and string
 function prepareCurrentWords(){
     for(let i = 0; i < wordsToGenerate; i++){
-        targetWords.push(returnRandomWord());
+        words.push(returnRandomWord());
     }
-    $("#targetText").prop("innerHTML", targetWords.join(" "));
+    $("#targetText").prop("innerHTML", words.join(" "));
 }
 
 // Return a random word from the big array
 function returnRandomWord(){
-    return wordsArray[Math.floor(Math.random() * wordsArray.length)];
+    return wordDatabase[Math.floor(Math.random() * wordDatabase.length)];
 }
 
 function prepareTest(){
-    targetWord = targetWords[0];
+    targetWord = words[0];
 }
 
 function finishTest(){
-    testEnd = true;
+    testEnded = true;
     inputField.prop("value", null);
     inputField.prop("disabled", "true");
 
+    // Stop the timer
+    clearTimeout(timer);
+
     // Calculating results
-    var charaCount = targetWords.join("").length;
-    var accuracy = Math.round(((charaCount - totalMistakes) / charaCount) * 100);
-    alert("Finished! Accuarcy: " + accuracy + "%");
+    // We add (n - 1) for charaCount to account for spaces in the sentence
+    var charaCount = words.join("").length + wordsToGenerate - 1;
+    var acc = Math.round(((charaCount - totalMistakes) / charaCount) * 100);
+    var seconds = totalTime / 10;
+
+    grossWPM = Math.round((charaCount / 5) / (seconds / 60));
+    alert(`Gross WPM: ${grossWPM}\nAccuracy: ${acc}%\nTime: ${seconds}"`);
 }
 
 // Cycles to the next word
 function nextWord(){
-    if(targetIndex < targetWords.length - 1){
-        targetIndex++;
-        targetWord = targetWords[targetIndex];
+    if(currentIndex < words.length - 1){
+        currentIndex++;
+        targetWord = words[currentIndex];
     }
+}
+
+function countUncorrectedMistakes(){
+
+}
+
+// Start and update the timer every millisecond
+function updateTimer(){
+    totalTime++;
+    timer = setTimeout(updateTimer, 100);
 }
 
 // Intialisation & character checking
@@ -81,18 +101,18 @@ $(document).ready(function(){
 // Required to check user inputs for the input-field
 function checkForInputs(){   
     // Once we start typing, switch focus to the typing field to begin the test
-    $("#inputField").on("input", function(){
+    inputField.on("input", function(){
         var currentInput = inputField.prop("value");
-
-        console.log("curent word: " + targetWord + " with mistakes: " + totalMistakes);
         
         inputField.focus()
         
-        if(!testStart){
-            testStart = true;
+        if(!testStarted){
+            testStarted = true;
+            inputField.prop("placeholder", "");
+            updateTimer();
         }
 
-        if(!testEnd){
+        if(!testEnded){
             var index = currentInput.length - 1;
         
             // When the space key is pressed, move to the next word ONLY IF the user
@@ -107,7 +127,7 @@ function checkForInputs(){
                     inputField.prop("value", null);
 
                     // Finish the test if we're on the last word, otherwise cycle thru
-                    if(targetIndex == wordsToGenerate - 1){
+                    if(currentIndex == wordsToGenerate - 1){
                         finishTest();
                     }
                     else{
@@ -135,7 +155,7 @@ function checkForInputs(){
                 }
 
                 // If the user has typed the last word correctly, automatically finish the test
-                if(currentInput == targetWord && targetIndex == wordsToGenerate - 1){
+                if(currentInput == targetWord && currentIndex == wordsToGenerate - 1){
                     finishTest();
                 }
             }
