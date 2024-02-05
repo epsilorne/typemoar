@@ -8,9 +8,9 @@ div {
     padding: 15px;
 }
 
-#currentText{
+#targetText{
     user-select: none;
-    
+
     background-color: transparent;
     color: white;
     opacity: 0.5;
