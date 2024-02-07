@@ -66,7 +66,7 @@ function finishTest(){
     var seconds = totalTime / 10;
 
     grossWPM = Math.round((charaCount / 5) / (seconds / 60));
-    var results = `Gross WPM: ${grossWPM}<br>Accuracy: ${acc}%<br>Time: ${seconds}"<br><a onclick="setupTest()" href="#">Retry</a>`;
+    var results = `Gross WPM: ${grossWPM}<br>Accuracy: ${acc}%<br>Time: ${seconds}"<br>Mistakes: ${totalMistakes}<br><a onclick="setupTest()" href="#">Retry</a>`;
     $("#targetText").prop("innerHTML", results);
 }
 
@@ -122,11 +122,15 @@ $(document).ready(function(){
 
 // Required to check user inputs for the input-field
 function checkForInputs(){   
-    // Once we start typing, switch focus to the typing field to begin the test
+    // Set focus to the typing field when any input is detected
+    $(document).on("keypress", function(){
+        inputField.focus();
+    })
+    
+    // Once we start typing, begin the test
     inputField.on("input", function(){
         var currentInput = inputField.prop("value");
-        
-        inputField.focus()
+
         
         if(!testStarted){
             testStarted = true;
@@ -141,10 +145,13 @@ function checkForInputs(){
             // has at least typed one character
             if(currentInput.charAt(index) === " "){
                 if(currentInput.length > 1){
+                    // Remove the entered space from the input
+                    currentInput = currentInput.trimEnd();
+                    
                     // If the user has typed the word too short, add the number of
                     // missing characters to totalMistakes
                     if(currentInput.length < targetWord.length){
-                        totalMistakes += targetWord.length - currentInput.length + 1;
+                        totalMistakes += targetWord.length - currentInput.length;
                     }
                     inputField.prop("value", null);
 
@@ -155,9 +162,6 @@ function checkForInputs(){
                     else{
                         nextWord();
                     }
-            
-                    // This prevents the space from being entered into the input field
-                    return false;
                 }
                 else{
                     // This prevents the space from being entered into the input field
@@ -170,7 +174,7 @@ function checkForInputs(){
         
                 if(inputChar != targetChar){
                     totalMistakes++;
-                    console.log(inputChar + "' doesn't match with '" + targetChar + "'.")
+                    console.log(targetWord + ", " + inputChar + "' doesn't match with '" + targetChar + "'.")
                 }
                 else{
                     correctCharacters++;
