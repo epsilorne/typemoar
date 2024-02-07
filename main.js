@@ -64,8 +64,10 @@ function finishTest(){
     clearTimeout(timer);
 
     // Calculating results
-    var charaCount = words.join("").length;
-    var acc = Math.round(((charaCount - totalMistakes) / charaCount) * 100);
+    // Spaces are included in character count, but excluded in accuracy (to avoid inflation)
+    var spaces = wordsToGenerate - 1;
+    var charaCount = words.join("").length + spaces
+    var acc = (((charaCount - totalMistakes - spaces) / (charaCount - spaces)) * 100).toFixed(1);
     var seconds = totalTime / 10;
     var mins = seconds / 60;
 
