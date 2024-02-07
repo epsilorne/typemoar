@@ -1,4 +1,4 @@
 # typemoar
 A typing speed benchmark.
 
-The word database contains 10,000 of the most commonly used English words (excluding profanity), and can be found [here.](https://github.com/first20hours/google-10000-english)
+The word database makes use of the Oxford 3000 and 5000 - a list containing 5,000 core English words. It can be found [here.](https://github.com/jnoodle/English-Vocabulary-Word-List/tree/master)
