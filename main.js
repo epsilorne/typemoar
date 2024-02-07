@@ -19,9 +19,13 @@ var currentIndex;
 // Test stats
 var totalTime;
 var totalMistakes;
-var uncorrectedMistakes;
+var totalUncorrectedMistakes;
 var correctCharacters;
 var grossWPM;
+var netWPM;
+
+// Mistakes are tracked per-word using a string representation
+var currentMistakes;
 
 
 // Gets the 10,000 word list and places it into an array, though it's janky
@@ -60,13 +64,25 @@ function finishTest(){
     clearTimeout(timer);
 
     // Calculating results
-    // We add (n - 1) for charaCount to account for spaces in the sentence
-    var charaCount = words.join("").length + wordsToGenerate - 1;
+    var charaCount = words.join("").length;
     var acc = Math.round(((charaCount - totalMistakes) / charaCount) * 100);
     var seconds = totalTime / 10;
+    var mins = seconds / 60;
 
-    grossWPM = Math.round((charaCount / 5) / (seconds / 60));
-    var results = `Gross WPM: ${grossWPM}<br>Accuracy: ${acc}%<br>Time: ${seconds}"<br>Mistakes: ${totalMistakes}<br><a onclick="setupTest()" href="#">Retry</a>`;
+    grossWPM = (charaCount / 5) / mins;
+    netWPM = grossWPM - (totalUncorrectedMistakes / mins);
+
+    // Prevents negative WPM
+    if(netWPM <= 0){ 
+        netWPM = 0;
+    }
+
+    var results = `
+                    WPM: ${Math.round(netWPM)}<br>
+                    Gross WPM: ${Math.round(grossWPM)}<br>
+                    Accuracy: ${acc}%<br>
+                    Time: ${seconds}"<br>
+                    <a onclick="setupTest()" href="#">Retry</a>`;
     $("#targetText").prop("innerHTML", results);
 }
 
@@ -78,8 +94,7 @@ function nextWord(){
     }
 }
 
-// Restarts all test-related variables, generates words
-// and awaits user input
+// Restarts all test-related variables, generates words and awaits user input
 function setupTest(){
     words = [];
     testStarted = false;
@@ -88,9 +103,11 @@ function setupTest(){
 
     totalTime = 0;
     totalMistakes = 0;
-    uncorrectedMistakes = 0;
+    totalUncorrectedMistakes = 0;
     correctCharacters = 0;
     grossWPM = 0;
+
+    currentMistakes = [];
 
     inputField.prop("disabled", false);
     inputField.prop("placeholder", "begin typing...");
@@ -105,10 +122,25 @@ function setupTest(){
     checkForInputs();
 }
 
-// Start and update the timer every millisecond
+// Start and update the timer every 100ms
 function updateTimer(){
     totalTime++;
     timer = setTimeout(updateTimer, 100);
+}
+
+// Calculates the number of mismatching characters between strings
+// Here, it's used to calculate uncorrected mistakes for each word
+function calculateDifference(input, target){
+    const maxLength = Math.max(input.length, target.length);
+    var diffCount = 0;
+    
+    for(let i = 0; i < maxLength; i++){
+        if(input.charAt(i) != target.charAt(i)){
+            diffCount++;
+        }
+    }
+
+    return diffCount;
 }
 
 // Intialisation
@@ -155,6 +187,10 @@ function checkForInputs(){
                     }
                     inputField.prop("value", null);
 
+                    // Add the uncorrected mistakes, then reset the mistakes counter
+                    totalUncorrectedMistakes += calculateDifference(currentInput, targetWord);
+                    currentMistakes = [];
+
                     // Finish the test if we're on the last word, otherwise cycle thru
                     if(currentIndex == wordsToGenerate - 1){
                         finishTest();
@@ -173,8 +209,16 @@ function checkForInputs(){
                 var targetChar = targetWord.charAt(index);
         
                 if(inputChar != targetChar){
-                    totalMistakes++;
-                    console.log(targetWord + ", " + inputChar + "' doesn't match with '" + targetChar + "'.")
+                    // Create an string representation of the current mistake
+                    var mistake = index + inputChar + targetChar;
+
+                    // We check if the mistake has been registered yet, to prevent
+                    // duplicates if the user attempts to correct it
+                    if(!currentMistakes.includes(mistake)){
+                        currentMistakes.push(mistake);
+                        totalMistakes++;
+                        console.log(targetWord + ", " + inputChar + "' doesn't match with '" + targetChar + "'.")
+                    }
                 }
                 else{
                     correctCharacters++;
