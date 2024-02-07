@@ -260,6 +260,11 @@ function checkForInputs(){
                         $("#" + currentIndex).removeClass("incorrectWord");
                         $("#" + currentIndex).addClass("currentWord");
                     }
+                    // Otherwise use the old incorrect highlighting
+                    else{
+                        $("#" + currentIndex).removeClass("incorrectWord");
+                        $("#" + currentIndex).addClass("incorrectOldWord");
+                    }
 
                     // Finish the test if we're on the last word, otherwise cycle thru
                     if(currentIndex == wordsToGenerate - 1){
@@ -275,6 +280,13 @@ function checkForInputs(){
                 }
             }
             else{
+                // If at some point, the user has typed the word correctly, remove incorrect highlighting
+                console.log(currentInput.substring(0, index + 1));
+                if(currentInput.substring(0, index + 1) == targetWord.substring(0, index + 1)){
+                    $("#" + currentIndex).removeClass("incorrectWord");
+                    $("#" + currentIndex).addClass("currentWord");
+                }
+                
                 var inputChar = currentInput.charAt(index);
                 var targetChar = targetWord.charAt(index);
         

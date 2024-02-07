@@ -94,3 +94,7 @@ a:visited {
 .incorrectWord{
     color: rgb(255, 86, 86);
 }
+
+.incorrectOldWord{
+    color: rgb(190, 74, 74);
+}
