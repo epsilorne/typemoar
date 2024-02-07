@@ -12,8 +12,7 @@ div {
     user-select: none;
 
     background-color: transparent;
-    color: white;
-    opacity: 0.5;
+    color: rgb(154, 153, 156);
 
     font-size: 32px;
     font-family: "Montserrat", sans-serif;
@@ -36,8 +35,7 @@ input {
 }
 
 ::placeholder {
-    color: white;
-    opacity: 0.5;
+    color: rgb(154, 153, 156);
   }
 
 footer {
@@ -53,4 +51,16 @@ a {
 
 a:visited {
     color:white;
+}
+
+.currentWord{
+    color: rgb(255, 228, 77);
+}
+
+.oldWord{
+    color: rgb(154, 153, 156);
+}
+
+.incorrectWord{
+    color: rgb(255, 86, 86);
 }

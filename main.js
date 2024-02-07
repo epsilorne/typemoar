@@ -43,7 +43,15 @@ function prepareCurrentWords(){
     for(let i = 0; i < wordsToGenerate; i++){
         words.push(returnRandomWord());
     }
-    $("#targetText").prop("innerHTML", words.join(" "));
+
+    // Create a span for each word in the array
+    for(let i = 0; i < words.length; i++){
+        var span = document.createElement("span");
+        
+        span.id = i;
+        span.innerText = words[i] + " ";
+        $("#targetText").append(span);
+    }
 }
 
 // Return a random word from the big array
@@ -91,8 +99,16 @@ function finishTest(){
 // Cycles to the next word
 function nextWord(){
     if(currentIndex < words.length - 1){
+        // If the word was typed correctly, remove any highlighting
+        if($("#" + currentIndex).attr("class") != "incorrectWord"){
+            $("#" + currentIndex).removeClass("currentWord");
+            $("#" + currentIndex).addClass("oldWord");
+        }
         currentIndex++;
         targetWord = words[currentIndex];
+
+        // Highlight the next word immediately
+        $("#" + currentIndex).addClass("currentWord");
     }
 }
 
@@ -111,6 +127,8 @@ function setupTest(){
 
     currentMistakes = [];
 
+    $("#targetText").empty();
+
     inputField.prop("disabled", false);
     inputField.prop("placeholder", "begin typing...");
     inputField.focus();
@@ -122,6 +140,9 @@ function setupTest(){
     prepareCurrentWords();
     prepareTest();
     checkForInputs();
+
+    // Highlight the starting word
+    $("#" + currentIndex).addClass("currentWord");
 }
 
 // Start and update the timer every 100ms
@@ -159,6 +180,7 @@ function checkForInputs(){
     // Set focus to the typing field when any input is detected
     $(document).on("keypress", function(){
         inputField.focus();
+        $("#" + currentIndex).addClass("currentWord");
     })
     
     // Once we start typing, begin the test
@@ -189,9 +211,17 @@ function checkForInputs(){
                     }
                     inputField.prop("value", null);
 
+                    var oldMistakes = totalUncorrectedMistakes;
+
                     // Add the uncorrected mistakes, then reset the mistakes counter
                     totalUncorrectedMistakes += calculateDifference(currentInput, targetWord);
                     currentMistakes = [];
+
+                    // Remove incorrect highlighting if all mistakes were fixed
+                    if(oldMistakes - totalUncorrectedMistakes == 0){
+                        $("#" + currentIndex).removeClass("incorrectWord");
+                        $("#" + currentIndex).addClass("currentWord");
+                    }
 
                     // Finish the test if we're on the last word, otherwise cycle thru
                     if(currentIndex == wordsToGenerate - 1){
@@ -217,6 +247,10 @@ function checkForInputs(){
                     // We check if the mistake has been registered yet, to prevent
                     // duplicates if the user attempts to correct it
                     if(!currentMistakes.includes(mistake)){
+                        // Highlight incorrect word
+                        $("#" + currentIndex).removeClass("currentWord");
+                        $("#" + currentIndex).addClass("incorrectWord");
+
                         currentMistakes.push(mistake);
                         totalMistakes++;
                         console.log(targetWord + ", " + inputChar + "' doesn't match with '" + targetChar + "'.")
