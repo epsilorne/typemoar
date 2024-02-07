@@ -87,13 +87,48 @@ function finishTest(){
         netWPM = 0;
     }
 
-    var results = `
-                    WPM: ${Math.round(netWPM)}<br>
-                    Gross WPM: ${Math.round(grossWPM)}<br>
-                    Accuracy: ${acc}%<br>
-                    Time: ${seconds}"<br>
-                    <a onclick="setupTest()" href="#">Retry</a>`;
-    $("#targetText").prop("innerHTML", results);
+    var leftResults = `
+                        WPM: ${Math.round(netWPM)}<br>
+                        <small>(${Math.round(grossWPM)} raw)</small><br>
+                        ${acc}% Accuracy<br>
+                        ${seconds} Seconds
+    `
+
+    var rightResults = `
+                        <h1>${calculateGrade(acc)}</h1>               
+    `
+    
+    $("#resultsLeft").prop("innerHTML", leftResults);
+    $("#resultsRight").prop("innerHTML", rightResults);
+
+    $("#container").hide();
+    $("#resultsTable").show();
+}
+
+// Returns a letter-grade based on the user's accuracy
+// Not to be taken seriously!
+function calculateGrade(acc){
+    if(acc == 100){
+        return "<span style='color: rgb(230, 203, 99)'>SS</span>";
+    }
+    else if(acc >= 99 && acc < 100){
+        return "<span style='color: rgb(230, 203, 99)'>S</span>";
+    }
+    else if(acc >= 97 && acc < 99){
+        return "<span style='color: rgb(88, 191, 67)'>A</span>";
+    }
+    else if(acc >= 95 && acc < 97){
+        return "<span style='color: rgb(61, 169, 196)'>B</span>";
+    }
+    else if(acc >= 90 && acc < 95){
+        return "<span style='color: rgb(138, 85, 224)'>C</span>";
+    }
+    else if(acc >= 85 && acc < 90){
+        return "<span style='color: rgb(201, 46, 80)'>D</span>";
+    }
+    else{
+        return "<span style='color: rgb(201, 46, 80)'>F</span>";
+    }
 }
 
 // Cycles to the next word
@@ -114,6 +149,9 @@ function nextWord(){
 
 // Restarts all test-related variables, generates words and awaits user input
 function setupTest(){
+    $("#resultsTable").hide();
+    $("#container").show();
+    
     words = [];
     testStarted = false;
     testEnded = false;
