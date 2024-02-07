@@ -101,33 +101,33 @@ function finishTest(){
     $("#resultsLeft").prop("innerHTML", leftResults);
     $("#resultsRight").prop("innerHTML", rightResults);
 
-    $("#container").hide();
-    $("#resultsTable").show();
+    $("#test").hide();
+    $("#results").fadeIn(100);
 }
 
 // Returns a letter-grade based on the user's accuracy
 // Not to be taken seriously!
 function calculateGrade(acc){
     if(acc == 100){
-        return "<span style='color: rgb(230, 203, 99)'>SS</span>";
+        return "<span style='color: rgb(230, 203, 99); font-size: 100px'>SS</span>";
     }
     else if(acc >= 99 && acc < 100){
-        return "<span style='color: rgb(230, 203, 99)'>S</span>";
+        return "<span style='color: rgb(230, 203, 99); font-size: 100px'>S</span>";
     }
     else if(acc >= 97 && acc < 99){
-        return "<span style='color: rgb(88, 191, 67)'>A</span>";
+        return "<span style='color: rgb(88, 191, 67); font-size: 100px'>A</span>";
     }
     else if(acc >= 95 && acc < 97){
-        return "<span style='color: rgb(61, 169, 196)'>B</span>";
+        return "<span style='color: rgb(61, 169, 196); font-size: 100px'>B</span>";
     }
     else if(acc >= 90 && acc < 95){
-        return "<span style='color: rgb(138, 85, 224)'>C</span>";
+        return "<span style='color: rgb(138, 85, 224); font-size: 100px'>C</span>";
     }
     else if(acc >= 85 && acc < 90){
-        return "<span style='color: rgb(201, 46, 80)'>D</span>";
+        return "<span style='color: rgb(201, 46, 80); font-size: 100px'>D</span>";
     }
     else{
-        return "<span style='color: rgb(201, 46, 80)'>F</span>";
+        return "<span style='color: rgb(201, 46, 80); font-size: 100px'>F</span>";
     }
 }
 
@@ -149,8 +149,8 @@ function nextWord(){
 
 // Restarts all test-related variables, generates words and awaits user input
 function setupTest(){
-    $("#resultsTable").hide();
-    $("#container").show();
+    $("#results").hide();
+    $("#test").fadeIn();
     
     words = [];
     testStarted = false;
@@ -281,7 +281,6 @@ function checkForInputs(){
             }
             else{
                 // If at some point, the user has typed the word correctly, remove incorrect highlighting
-                console.log(currentInput.substring(0, index + 1));
                 if(currentInput.substring(0, index + 1) == targetWord.substring(0, index + 1)){
                     $("#" + currentIndex).removeClass("incorrectWord");
                     $("#" + currentIndex).addClass("currentWord");
@@ -303,7 +302,6 @@ function checkForInputs(){
 
                         currentMistakes.push(mistake);
                         totalMistakes++;
-                        console.log(targetWord + ", " + inputChar + "' doesn't match with '" + targetChar + "'.")
                     }
                 }
                 else{
