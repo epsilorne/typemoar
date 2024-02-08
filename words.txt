@@ -33,7 +33,6 @@ accompany
 accomplish
 accomplishment
 accordance
-according to
 accordingly
 account
 accountability
@@ -152,7 +151,7 @@ alignment
 alike
 alive
 all
-all right
+alright
 allegation
 allege
 allegedly
@@ -218,7 +217,7 @@ anticipate
 anxiety
 anxious
 any
-any more
+any
 anybody
 anyone
 anything
@@ -1575,7 +1574,6 @@ equip
 equipment
 equivalent
 era
-erect
 error
 erupt
 escalate
@@ -1716,7 +1714,7 @@ fairness
 faith
 fake
 fall
-FALSE
+false
 fame
 familiar
 family
@@ -2078,7 +2076,6 @@ hate
 hatred
 haunt
 have
-have to
 hazard
 he
 head
@@ -2194,7 +2191,7 @@ hydrogen
 hypothesis
 i
 ice
-ice cream
+icecream
 icon
 idea
 ideal
@@ -2881,7 +2878,6 @@ mysterious
 mystery
 myth
 nail
-naked
 name
 namely
 narrative
@@ -2928,7 +2924,6 @@ news
 newsletter
 newspaper
 next
-next to
 nice
 niche
 night
@@ -2937,7 +2932,6 @@ nine
 nineteen
 ninety
 no
-no one
 noble
 nobody
 nod
@@ -3194,7 +3188,7 @@ pension
 people
 pepper
 per
-per cent
+percent
 perceive
 percentage
 perception
@@ -3939,10 +3933,6 @@ seventy
 several
 severe
 severely
-sex
-sexual
-sexuality
-sexy
 shade
 shadow
 shake
@@ -4616,7 +4606,7 @@ trouble
 troubled
 trousers
 truck
-TRUE
+true
 truly
 trust
 trustee
@@ -4709,7 +4699,6 @@ us
 usage
 use
 used
-used to
 useful
 useless
 user
