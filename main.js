@@ -24,6 +24,8 @@ var correctCharacters;
 var grossWPM;
 var netWPM;
 
+var bestWPM;
+
 // Mistakes are tracked per-word using a string representation
 var currentMistakes;
 
@@ -87,19 +89,36 @@ function finishTest(){
         netWPM = 0;
     }
 
-    var leftResults = `
+    var setPB = false;
+
+    // Set a new best WPM if appropriate
+    if(netWPM > bestWPM){
+        bestWPM = netWPM;
+        localStorage.setItem("bestWPM", netWPM);
+        setPB = true;
+    }
+
+    var wpmResults = `
                         WPM: ${Math.round(netWPM)}<br>
                         <small>(${Math.round(grossWPM)} raw)</small><br>
+    `
+
+    var accTimeResults = `
                         ${acc}% Accuracy<br>
                         ${seconds} Seconds
     `
 
-    var rightResults = `
-                        <h1>${calculateGrade(acc)}</h1>               
-    `
+    var gradeResults = `<h1>${calculateGrade(acc)}</h1>`
+    var recordResults = `Record: ${Math.round(bestWPM)}WPM`
+
+    if(setPB){
+        recordResults += "<br><small>(that's a new record!)</small>";
+    }
     
-    $("#resultsLeft").prop("innerHTML", leftResults);
-    $("#resultsRight").prop("innerHTML", rightResults);
+    $("#wpm").prop("innerHTML", wpmResults);
+    $("#accTime").prop("innerHTML", accTimeResults);
+    $("#grade").prop("innerHTML", gradeResults);
+    $("#record").prop("innerHTML", recordResults);
 
     $("#test").hide();
     $("#results").fadeIn(100);
@@ -109,25 +128,25 @@ function finishTest(){
 // Not to be taken seriously!
 function calculateGrade(acc){
     if(acc == 100){
-        return "<span style='color: rgb(230, 203, 99); font-size: 100px'>SS</span>";
+        return "<span style='color: rgb(230, 203, 99); font-size: 100px; line-height: 5%'>SS</span>";
     }
     else if(acc >= 99 && acc < 100){
-        return "<span style='color: rgb(230, 203, 99); font-size: 100px'>S</span>";
+        return "<span style='color: rgb(230, 203, 99); font-size: 100px; line-height: 5%'>S</span>";
     }
     else if(acc >= 97 && acc < 99){
-        return "<span style='color: rgb(88, 191, 67); font-size: 100px'>A</span>";
+        return "<span style='color: rgb(88, 191, 67); font-size: 100px; line-height: 5%'>A</span>";
     }
     else if(acc >= 95 && acc < 97){
-        return "<span style='color: rgb(61, 169, 196); font-size: 100px'>B</span>";
+        return "<span style='color: rgb(61, 169, 196); font-size: 100px; line-height: 5%'>B</span>";
     }
     else if(acc >= 90 && acc < 95){
-        return "<span style='color: rgb(138, 85, 224); font-size: 100px'>C</span>";
+        return "<span style='color: rgb(138, 85, 224); font-size: 100px; line-height: 5%'>C</span>";
     }
     else if(acc >= 85 && acc < 90){
-        return "<span style='color: rgb(201, 46, 80); font-size: 100px'>D</span>";
+        return "<span style='color: rgb(201, 46, 80); font-size: 100px; line-height: 5%'>D</span>";
     }
     else{
-        return "<span style='color: rgb(201, 46, 80); font-size: 100px'>F</span>";
+        return "<span style='color: rgb(201, 46, 80); font-size: 100px; line-height: 5%'>F</span>";
     }
 }
 
@@ -162,6 +181,9 @@ function setupTest(){
     totalUncorrectedMistakes = 0;
     correctCharacters = 0;
     grossWPM = 0;
+
+    bestWPM = parseInt(localStorage.getItem("bestWPM")) || 0;
+    setPB = 0;
 
     currentMistakes = [];
 
