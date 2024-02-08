@@ -91,6 +91,10 @@ a:visited {
     color: rgb(255, 228, 77);
 }
 
+.previewWord{
+    color: rgb(179, 162, 69);
+}
+
 .oldWord{
     color: rgb(154, 153, 156);
 }

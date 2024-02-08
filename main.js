@@ -180,7 +180,7 @@ function setupTest(){
     checkForInputs();
 
     // Highlight the starting word
-    $("#" + currentIndex).addClass("currentWord");
+    $("#0").addClass("previewWord");
 }
 
 // Start and update the timer every 100ms
@@ -218,6 +218,9 @@ function checkForInputs(){
     // Set focus to the typing field when any input is detected
     $(document).on("keypress", function(){
         inputField.focus();
+        if($("#0").attr("class") == "previewWord"){
+            $("#0").removeClass("previewWord");
+        }
         $("#" + currentIndex).addClass("currentWord");
     })
     
