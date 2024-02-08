@@ -3543,7 +3543,6 @@ random
 range
 rank
 ranking
-rape
 rapid
 rapidly
 rare
@@ -4037,8 +4036,6 @@ sky
 slam
 slap
 slash
-slave
-slavery
 sleep
 slice
 slide
