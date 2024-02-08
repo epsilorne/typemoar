@@ -39,7 +39,7 @@ input {
   }
 
 footer {
-    color: white;
+    color: rgb(154, 153, 156);
     position: fixed;
     bottom: 0;
     padding: 15px;
@@ -76,15 +76,15 @@ button:hover {
 }
 
 a {
-    color:white;
+    color: rgb(154, 153, 156);
+}
+
+a:visited {
+    color: rgb(154, 153, 156);
 }
 
 .results{
     display: none;
-}
-
-a:visited {
-    color:white;
 }
 
 .currentWord{
