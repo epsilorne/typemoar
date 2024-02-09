@@ -17,8 +17,9 @@ var words;
 
 // The current word to be typed
 var targetWord;
-var currentIndex;
 
+// Information about the current word, line and what word the line starts
+var currentIndex, currentLine, newLineIndex;
 
 // Test stats
 var totalTime, totalMistakes, totalUncorrectedMistakes, correctCharacters, grossWPM, netWPM, bestWPM;
@@ -140,8 +141,15 @@ function nextWord(){
         // Highlight the next word immediately
         $("#" + currentIndex).addClass("currentWord");
 
-        // Start showing future words
-        $("#" + parseInt(currentIndex + 21)).fadeIn();
+        // If the vert. position of the new word is different to the previous word,
+        // we're on a new line. If so, then generate more words
+        if($("#" + newLineIndex).offset().top != $("#" + currentIndex).offset().top){
+            newLineIndex = currentIndex;
+        
+            // TODO: generateWords() except it doesn't generate the old ones
+
+            console.log("NEW LINE!");
+        }
     }
 }
 
@@ -159,6 +167,8 @@ function setupTest(){
     testStarted = false;
     testEnded = false;
     currentIndex = 0;
+    currentLine = 0;
+    newLineIndex = 0;
 
     totalTime = 0;
     totalMistakes = 0;
