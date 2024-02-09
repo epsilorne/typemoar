@@ -18,7 +18,7 @@ body {
     background-color: var(--bg-colour);
     font-family: "Space Mono", monospace;
     user-select: none;
-    min-height: 100vh;
+    position: relative;
 }
 
 div {
@@ -28,6 +28,7 @@ div {
 #container{
     margin-left: 15%;
     margin-right: 15%;
+    padding-bottom: 60px;
 }
 
 #targetText{
