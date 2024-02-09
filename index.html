@@ -13,22 +13,37 @@
                 <div id="targetText"></div>
                 <div id="inputText"><input type="text" id="inputField" placeholder="begin typing..." spellcheck="false"></div>
             </div>
-            <div id="results" class="results">
-                <table id="resultsTable">
-                    <tr>
-                        <td><div id="wpm"></div></td>
-                        <td><div id="grade"></div></td>
-                    </tr>
-                    <tr>
-                        <td><div id="accTime"></div></td>
-                        <td><div id="record"></div></td>
-                    </tr>
-                    <tr>
-                        <td><button onclick="setupTest()">Retry</button></td>
-                    </tr>
-                </table>
+            <div id="settings">
+                <div class="settingsLabel">words: </div>
+                <div class="settingsInner">
+                    <button class="settingsButton" id="button10" onclick="regenerateWords(10)">10</button>
+                </div>
+                <div class="settingsInner">
+                    <button class="settingsButton" id="button25"onclick="regenerateWords(25)">25</button>
+                </div>
+                <div class="settingsInner">
+                    <button class="settingsButton" id="button50" onclick="regenerateWords(50)">50</button>
+                </div>
+                <div class="settingsInner">
+                    <button class="settingsButton" id="button100" onclick="regenerateWords(100)">100</button>
+                </div>
             </div>
          </div>
+         <div id="results" class="results">
+            <table id="resultsTable">
+                <tr>
+                    <td><div id="wpm"></div></td>
+                    <td><div id="grade"></div></td>
+                </tr>
+                <tr>
+                    <td><div id="accTime"></div></td>
+                    <td><div id="record"></div></td>
+                </tr>
+                <tr>
+                    <td><button onclick="setupTest()">Retry</button></td>
+                </tr>
+            </table>
+        </div>
         <footer>
             typemoar created by epsilorne | <a href="https://github.com/epsilorne/typemoar">view source</a>
         </footer>

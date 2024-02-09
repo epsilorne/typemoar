@@ -125,6 +125,38 @@ a:visited {
     border-radius: 15px;
 }
 
+#settings{
+    background-color: rgb(62, 58, 66);
+    border: transparent;
+    border-radius: 15px;
+
+    margin-top: 15px;
+}
+
+.settingsInner{
+    display: inline-block;
+    padding: 0px;
+    margin-right: 5px;
+    width: 10%;
+}
+
+.settingsLabel{
+    padding:0px;
+    padding-left: 15px;
+    width: 10%;
+    color: rgb(154, 153, 156);
+    font-size: 24px;
+}
+
+.settingsButton{
+    background-color: rgb(114, 109, 118);
+    width: 100%;
+}
+
+.selectedButton{
+    background-color: rgb(255, 228, 77);
+}
+
 .currentWord{
     color: rgb(255, 228, 77);
 }

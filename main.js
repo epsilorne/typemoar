@@ -120,7 +120,7 @@ function finishTest(){
     $("#grade").prop("innerHTML", gradeResults);
     $("#record").prop("innerHTML", recordResults);
 
-    $("#test").hide();
+    $("#container").hide();
     $("#results").fadeIn(100);
 }
 
@@ -158,19 +158,26 @@ function nextWord(){
             $("#" + currentIndex).removeClass("currentWord");
             $("#" + currentIndex).addClass("oldWord");
         }
+
         currentIndex++;
         targetWord = words[currentIndex];
 
         // Highlight the next word immediately
         $("#" + currentIndex).addClass("currentWord");
+
+        // Start showing future words
+        $("#" + parseInt(currentIndex + 21)).fadeIn();
     }
 }
 
 // Restarts all test-related variables, generates words and awaits user input
 function setupTest(){
     $("#results").hide();
-    $("#test").fadeIn();
+    $("#container").fadeIn();
+    $("#settings").show();
     
+    wordsToGenerate = parseInt(localStorage.getItem("wordsToGenerate")) || 10;
+
     words = [];
     testStarted = false;
     testEnded = false;
@@ -199,10 +206,49 @@ function setupTest(){
 
     prepareCurrentWords();
     prepareTest();
+    highlightButtons();
     checkForInputs();
 
     // Highlight the starting word
     $("#0").addClass("previewWord");
+}
+
+// Highlights the appropriate button depending on 'wordsToGenerate'
+function highlightButtons(){
+    if(wordsToGenerate == 10){
+        $("#button10").addClass("selectedButton");
+
+        $("#button25").removeClass("selectedButton");
+        $("#button50").removeClass("selectedButton");
+        $("#button100").removeClass("selectedButton");
+    }
+    else if(wordsToGenerate == 25){
+        $("#button25").addClass("selectedButton");
+
+        $("#button10").removeClass("selectedButton");
+        $("#button50").removeClass("selectedButton");
+        $("#button100").removeClass("selectedButton");
+    }
+    else if(wordsToGenerate == 50){
+        $("#button50").addClass("selectedButton");
+
+        $("#button10").removeClass("selectedButton");
+        $("#button25").removeClass("selectedButton");
+        $("#button100").removeClass("selectedButton");
+    }
+    else if(wordsToGenerate == 100){
+        $("#button100").addClass("selectedButton");
+
+        $("#button10").removeClass("selectedButton");
+        $("#button25").removeClass("selectedButton");
+        $("#button50").removeClass("selectedButton");
+    }
+}
+
+function regenerateWords(count){
+    wordsToGenerate = count;
+    localStorage.setItem("wordsToGenerate", count);
+    setupTest();
 }
 
 // Start and update the timer every 100ms
@@ -240,8 +286,9 @@ function checkForInputs(){
     // Set focus to the typing field when any input is detected
     $(document).on("keypress", function(){
         inputField.focus();
-        if($("#0").attr("class") == "previewWord"){
-            $("#0").removeClass("previewWord");
+        $("#0").removeClass("previewWord");
+        if($("#settings").is(":visible")){
+            $("#settings").fadeOut(200);
         }
         $("#" + currentIndex).addClass("currentWord");
     })
