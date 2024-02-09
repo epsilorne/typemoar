@@ -6,8 +6,7 @@ var timer;
 // Shorthand for the input field element
 var inputField;
 
-var testStarted;
-var testEnded;
+var testStarted, testEnded;
 
 // An array containing all characters (words) to be typed
 var words;
@@ -17,14 +16,7 @@ var targetWord;
 var currentIndex;
 
 // Test stats
-var totalTime;
-var totalMistakes;
-var totalUncorrectedMistakes;
-var correctCharacters;
-var grossWPM;
-var netWPM;
-
-var bestWPM;
+var totalTime, totalMistakes, totalUncorrectedMistakes, correctCharacters, grossWPM, netWPM, bestWPM;
 
 // Mistakes are tracked per-word using a string representation
 var currentMistakes;
@@ -43,7 +35,7 @@ function prepareWordsArray(){
 // Randomly generates a given number of words as an array and string
 function prepareCurrentWords(){
     for(let i = 0; i < wordsToGenerate; i++){
-        words.push(returnRandomWord());
+        words.push(wordDatabase[Math.floor(Math.random() * wordDatabase.length)]);
     }
 
     // Create a span for each word in the array
@@ -56,18 +48,8 @@ function prepareCurrentWords(){
     }
 }
 
-// Return a random word from the big array
-function returnRandomWord(){
-    return wordDatabase[Math.floor(Math.random() * wordDatabase.length)];
-}
-
-function prepareTest(){
-    targetWord = words[0];
-}
-
 function finishTest(){
     testEnded = true;
-    inputField.prop("value", null);
     inputField.prop("disabled", true);
 
     // Stop the timer
@@ -127,26 +109,20 @@ function finishTest(){
 // Returns a letter-grade based on the user's accuracy
 // Not to be taken seriously!
 function calculateGrade(acc){
-    if(acc == 100){
-        return "<span style='color: rgb(230, 203, 99); font-size: 100px; line-height: 5%'>SS</span>";
-    }
-    else if(acc >= 99 && acc < 100){
-        return "<span style='color: rgb(230, 203, 99); font-size: 100px; line-height: 5%'>S</span>";
-    }
-    else if(acc >= 97 && acc < 99){
-        return "<span style='color: rgb(88, 191, 67); font-size: 100px; line-height: 5%'>A</span>";
-    }
-    else if(acc >= 95 && acc < 97){
-        return "<span style='color: rgb(61, 169, 196); font-size: 100px; line-height: 5%'>B</span>";
-    }
-    else if(acc >= 90 && acc < 95){
-        return "<span style='color: rgb(138, 85, 224); font-size: 100px; line-height: 5%'>C</span>";
-    }
-    else if(acc >= 85 && acc < 90){
-        return "<span style='color: rgb(201, 46, 80); font-size: 100px; line-height: 5%'>D</span>";
-    }
-    else{
-        return "<span style='color: rgb(201, 46, 80); font-size: 100px; line-height: 5%'>F</span>";
+    var grades = [
+        {grade: 'SS', color: 'rgb(230, 203, 99)', thres: 100},
+        {grade: 'S', color: 'rgb(230, 203, 99)', thres: 99},
+        {grade: 'A', color: 'rgb(88, 191, 67)', thres: 98},
+        {grade: 'B', color: 'rgb(61, 169, 196)', thres: 95},
+        {grade: 'C', color: 'rgb(138, 85, 224)', thres: 90},
+        {grade: 'D', color: 'rgb(201, 46, 80)', thres: 85},
+        {grade: 'F', color: 'rgb(201, 46, 80)', thres: 0},
+    ];
+
+    for(let i = 0; i < grades.length; i++){
+        if(acc >= grades[i].thres){
+            return `<span style='color: ${grades[i].color}; font-size: 100px; line-height: 5%'>${grades[i].grade}</span>`
+        }
     }
 }
 
@@ -177,6 +153,7 @@ function setupTest(){
     $("#settings").show();
     
     wordsToGenerate = parseInt(localStorage.getItem("wordsToGenerate")) || 10;
+    bestWPM = parseInt(localStorage.getItem("bestWPM")) || 0;
 
     words = [];
     testStarted = false;
@@ -188,9 +165,7 @@ function setupTest(){
     totalUncorrectedMistakes = 0;
     correctCharacters = 0;
     grossWPM = 0;
-
-    bestWPM = parseInt(localStorage.getItem("bestWPM")) || 0;
-    setPB = 0;
+    setPB = false;
 
     currentMistakes = [];
 
@@ -198,6 +173,7 @@ function setupTest(){
 
     inputField.prop("disabled", false);
     inputField.prop("placeholder", "begin typing...");
+    inputField.prop("value", null);
     inputField.focus();
     
     // Disable event handlers so we don't make new ones when restarting
@@ -205,45 +181,16 @@ function setupTest(){
     inputField.off("keypress");
 
     prepareCurrentWords();
-    prepareTest();
-    highlightButtons();
+    targetWord = words[0];
     checkForInputs();
 
     // Highlight the starting word
     $("#0").addClass("previewWord");
+    $(".settingsButton").removeClass("selectedButton");
+    $(".settingsButton").prop("disabled", false);
+    $("#button" + wordsToGenerate).addClass("selectedButton");
 }
 
-// Highlights the appropriate button depending on 'wordsToGenerate'
-function highlightButtons(){
-    if(wordsToGenerate == 10){
-        $("#button10").addClass("selectedButton");
-
-        $("#button25").removeClass("selectedButton");
-        $("#button50").removeClass("selectedButton");
-        $("#button100").removeClass("selectedButton");
-    }
-    else if(wordsToGenerate == 25){
-        $("#button25").addClass("selectedButton");
-
-        $("#button10").removeClass("selectedButton");
-        $("#button50").removeClass("selectedButton");
-        $("#button100").removeClass("selectedButton");
-    }
-    else if(wordsToGenerate == 50){
-        $("#button50").addClass("selectedButton");
-
-        $("#button10").removeClass("selectedButton");
-        $("#button25").removeClass("selectedButton");
-        $("#button100").removeClass("selectedButton");
-    }
-    else if(wordsToGenerate == 100){
-        $("#button100").addClass("selectedButton");
-
-        $("#button10").removeClass("selectedButton");
-        $("#button25").removeClass("selectedButton");
-        $("#button50").removeClass("selectedButton");
-    }
-}
 
 function regenerateWords(count){
     wordsToGenerate = count;
@@ -297,9 +244,9 @@ function checkForInputs(){
     inputField.on("input", function(){
         var currentInput = inputField.prop("value");
 
-        
         if(!testStarted){
             testStarted = true;
+            $(".settingsButton").prop("disabled", true);
             inputField.prop("placeholder", "");
             updateTimer();
         }
