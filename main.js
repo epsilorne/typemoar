@@ -3,6 +3,7 @@ var testMode = 0;
 
 var wordsToGenerate;
 var testDuration;
+var wordsPerSentence = 8;
 
 var wordDatabase;
 var timer;
@@ -47,11 +48,14 @@ function generateWords(count){
 
     // Create a span for each word in the array
     for(let i = 0; i < words.length; i++){
-        var span = document.createElement("span");
+        // If a span does not exist for the current word, generate it
+        if($("#" + i).length <= 0){
+            var span = document.createElement("span");
         
-        span.id = i;
-        span.innerText = words[i] + " ";
-        $("#targetText").append(span);
+            span.id = i;
+            span.innerText = words[i] + " ";
+            $("#targetText").append(span);
+        }
     }
 }
 
@@ -142,11 +146,23 @@ function nextWord(){
         $("#" + currentIndex).addClass("currentWord");
 
         // If the vert. position of the new word is different to the previous word,
-        // we're on a new line. If so, then generate more words
-        if($("#" + newLineIndex).offset().top != $("#" + currentIndex).offset().top){
+        // we're on a new line. If so, then generate more words. NOTE THIS ONLY
+        // APPLIES FOR TIME-BASED TESTS
+        if(testMode == 1 && $("#" + newLineIndex).offset().top != $("#" + currentIndex).offset().top){
+            oldLineIndex = newLineIndex;
             newLineIndex = currentIndex;
         
             // TODO: generateWords() except it doesn't generate the old ones
+
+            generateWords(wordsPerSentence);
+            wordsToGenerate += wordsPerSentence;
+
+            // Delete the previously typed line span. Note we do not delete
+            // the actual words, as that will mess up test results
+            for(let i = oldLineIndex; i < newLineIndex; i++){
+                $("#" + i).remove();
+                console.log("deleting span " + i);
+            }
 
             console.log("NEW LINE!");
         }
@@ -161,6 +177,7 @@ function setupTest(){
     
     wordsToGenerate = parseInt(localStorage.getItem("wordsToGenerate")) || 10;
     testDuration = parseInt(localStorage.getItem("testDuration")) || 15;
+    testMode = parseInt(localStorage.getItem("testMode")) || 0;
     bestWPM = parseInt(localStorage.getItem("bestWPM")) || 0;
 
     words = [];
@@ -215,17 +232,20 @@ function generateWordsTest(count){
 
     wordsToGenerate = count;
     localStorage.setItem("wordsToGenerate", count);
+    localStorage.setItem("testMode", 0);
+
     setupTest();
 }
 
 function generateTimeTest(duration){
     testMode = 1;
     
-    wordsToGenerate = 8;
+    wordsToGenerate = 16;
     testDuration = duration;
 
-    localStorage.setItem("wordsToGenerate", 16);
+    localStorage.setItem("wordsToGenerate", wordsToGenerate);
     localStorage.setItem("testDuration", duration);
+    localStorage.setItem("testMode", 1);
 
     setupTest();
 }
