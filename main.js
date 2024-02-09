@@ -1,4 +1,8 @@
-var wordsToGenerate = 10;
+// What mode is the test? 0 = words, 1 = time
+var testMode = 0;
+
+var wordsToGenerate;
+var testDuration;
 
 var wordDatabase;
 var timer;
@@ -14,6 +18,7 @@ var words;
 // The current word to be typed
 var targetWord;
 var currentIndex;
+
 
 // Test stats
 var totalTime, totalMistakes, totalUncorrectedMistakes, correctCharacters, grossWPM, netWPM, bestWPM;
@@ -32,9 +37,10 @@ function prepareWordsArray(){
     }
 }
 
+// TODO: Modify this method so we don't create duplicate spans
 // Randomly generates a given number of words as an array and string
-function prepareCurrentWords(){
-    for(let i = 0; i < wordsToGenerate; i++){
+function generateWords(count){
+    for(let i = 0; i < count; i++){
         words.push(wordDatabase[Math.floor(Math.random() * wordDatabase.length)]);
     }
 
@@ -45,6 +51,15 @@ function prepareCurrentWords(){
         span.id = i;
         span.innerText = words[i] + " ";
         $("#targetText").append(span);
+    }
+}
+
+function changeTestMode(){
+    if(testMode == 0){
+        testMode = 1;
+    }
+    else{
+        testMode = 0;
     }
 }
 
@@ -67,35 +82,19 @@ function finishTest(){
     netWPM = grossWPM - (totalUncorrectedMistakes / mins);
 
     // Prevents negative WPM
-    if(netWPM <= 0){ 
-        netWPM = 0;
-    }
+    if(netWPM <= 0){ netWPM = 0; }
 
     var setPB = false;
 
     // Set a new best WPM if appropriate
-    if(netWPM > bestWPM){
-        bestWPM = netWPM;
-        localStorage.setItem("bestWPM", netWPM);
-        setPB = true;
-    }
+    if(netWPM > bestWPM){ bestWPM = netWPM; localStorage.setItem("bestWPM", netWPM); setPB = true; }
 
-    var wpmResults = `
-                        WPM: ${Math.round(netWPM)}<br>
-                        <small>(${Math.round(grossWPM)} raw)</small><br>
-    `
-
-    var accTimeResults = `
-                        ${acc}% Accuracy<br>
-                        ${seconds} Seconds
-    `
-
+    var wpmResults = `WPM: ${Math.round(netWPM)}<br><small>(${Math.round(grossWPM)} raw)</small><br>`
+    var accTimeResults = `${acc}% Accuracy<br>${seconds} Seconds`
     var gradeResults = `<h1>${calculateGrade(acc)}</h1>`
     var recordResults = `Record: ${Math.round(bestWPM)}WPM`
 
-    if(setPB){
-        recordResults += "<br><small>(that's a new record!)</small>";
-    }
+    if(setPB){ recordResults += "<br><small>(that's a new record!)</small>"; }
     
     $("#wpm").prop("innerHTML", wpmResults);
     $("#accTime").prop("innerHTML", accTimeResults);
@@ -153,6 +152,7 @@ function setupTest(){
     $("#settings").show();
     
     wordsToGenerate = parseInt(localStorage.getItem("wordsToGenerate")) || 10;
+    testDuration = parseInt(localStorage.getItem("testDuration")) || 15;
     bestWPM = parseInt(localStorage.getItem("bestWPM")) || 0;
 
     words = [];
@@ -180,7 +180,7 @@ function setupTest(){
     inputField.off("input");
     inputField.off("keypress");
 
-    prepareCurrentWords();
+    generateWords(wordsToGenerate);
     targetWord = words[0];
     checkForInputs();
 
@@ -188,13 +188,35 @@ function setupTest(){
     $("#0").addClass("previewWord");
     $(".settingsButton").removeClass("selectedButton");
     $(".settingsButton").prop("disabled", false);
-    $("#button" + wordsToGenerate).addClass("selectedButton");
+    
+    // Highlights a settings button to show the current mode
+    // Below refers to the fixed-number of words test
+    if(testMode == 0){
+        $("#button" + wordsToGenerate).addClass("selectedButton");
+    }
+    else{
+        $("#button" + testDuration + "s").addClass("selectedButton");
+    }
 }
 
 
-function regenerateWords(count){
+function generateWordsTest(count){
+    testMode = 0;
+
     wordsToGenerate = count;
     localStorage.setItem("wordsToGenerate", count);
+    setupTest();
+}
+
+function generateTimeTest(duration){
+    testMode = 1;
+    
+    wordsToGenerate = 8;
+    testDuration = duration;
+
+    localStorage.setItem("wordsToGenerate", 16);
+    localStorage.setItem("testDuration", duration);
+
     setupTest();
 }
 
