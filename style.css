@@ -1,21 +1,40 @@
+:root{
+    --bg-colour: rgb(54, 51, 57);
+    --secondary-bg-colour: rgb(62, 58, 66);
+    --input-bg-colour: rgb(86, 80, 91);
+    --secondary-colour: rgb(255, 228, 77);
+
+    --text-colour: rgb(195, 193, 197);
+    --input-colour: rgb(243, 243, 243);
+
+    --button-colour: rgb(255, 228, 77);
+    --secondary-button-colour: rgb(100, 94, 102);
+    --button-text-colour: rgb(73, 73, 73);
+    --hover-colour: rgb(185, 165, 53);
+}
+
 body {
     margin: 0;
-    background-color: rgb(54, 51, 57);
-    font-family: "Montserrat", sans-serif;
+    background-color: var(--bg-colour);
+    font-family: "Space Mono", monospace;
+    user-select: none;
 }
 
 div {
     padding: 15px;
 }
 
+#container{
+    margin-left: 15%;
+    margin-right: 15%;
+}
+
 #targetText{
-    user-select: none;
-
     background-color: transparent;
-    color: rgb(195, 193, 197);
+    color: var(--text-colour);
 
-    font-size: 32px;
-    font-family: "Montserrat", sans-serif;
+
+    font-size: 24px;
 }
 
 input {
@@ -23,7 +42,7 @@ input {
     margin-top: 15px;
     margin-bottom: 15px;
    
-    width: 25%;
+    width: 100%;
     border: transparent;
     border-radius: 15px;
     outline:  none;
@@ -31,19 +50,20 @@ input {
     min-height: 64px;
     box-sizing: border-box;
 
-    background-color: rgb(79, 76, 83);
-    color: white;
+    background-color: var(--input-bg-colour);
+    color: var(--input-colour);
 
-    font-size: 32px;
-    font-family: "Montserrat", sans-serif;
+    font-size: 24px;
+    font-family: "Space Mono", monospace;
 }
 
 ::placeholder {
-    color: rgb(195, 193, 197);
+    color: var(--text-colour);
   }
 
 footer {
-    color: rgb(154, 153, 156);
+    user-select: all;
+    color: var(--text-colour);
     position: fixed;
     bottom: 0;
     padding: 15px;
@@ -59,10 +79,9 @@ table{
     margin-right: auto;
 
     background-color: transparent;
-    color: white;
+    color: var(--text-colour);
 
     font-size: 32px;
-    font-family: "Montserrat", sans-serif;
 }
 
 td {
@@ -75,27 +94,27 @@ button {
     margin: 15px;
     width: 50%;
 
-    color: rgb(73, 73, 73);
-    background-color: rgb(255, 228, 77);
+    color: var(--button-text-colour);
+    background-color: var(--secondary-colour);
     border: transparent;
     border-radius: 15px;
 
-    font-size: 32px;
-    font-family: "Montserrat", sans-serif;
+    font-size: 24px;
+    font-family: "Space Mono", monospace;
 
     cursor: pointer;
 }
 
 button:hover {
-    background-color: rgb(185, 165, 53);
+    background-color: var(--hover-colour);
 }
 
 a {
-    color: rgb(154, 153, 156);
+    color: var(--text-colour)
 }
 
 a:visited {
-    color: rgb(154, 153, 156);
+    color: var(--text-colour)
 }
 
 .results{
@@ -105,28 +124,24 @@ a:visited {
     margin-right: auto;
     width: 50%;
 
-    background-color: rgb(79, 76, 83);
+    background-color: var(--secondary-bg-colour);
 
     border: transparent;
     border-radius: 15px;
 }
 
-#resultsTable{
-    padding: 0px;
-}
-
-#inputText{
+.noPadding{
     padding: 0px;
 }
 
 #test{
-    background-color: rgb(62, 58, 66);
+    background-color: var(--secondary-bg-colour);
     border: transparent;
     border-radius: 15px;
 }
 
 #settings{
-    background-color: rgb(62, 58, 66);
+    background-color: var(--secondary-bg-colour);
     border: transparent;
     border-radius: 15px;
 
@@ -144,21 +159,22 @@ a:visited {
     padding:0px;
     padding-left: 15px;
     width: 10%;
-    color: rgb(154, 153, 156);
+    color: var(--text-colour);
     font-size: 24px;
 }
 
 .settingsButton{
-    background-color: rgb(114, 109, 118);
+    background-color: var(--secondary-button-colour);
+    color: var(--button-text-colour);
     width: 100%;
 }
 
 .selectedButton{
-    background-color: rgb(255, 228, 77);
+    background-color: var(--secondary-colour)
 }
 
 .currentWord{
-    color: rgb(255, 228, 77);
+    color: var(--secondary-colour)
 }
 
 .previewWord{
@@ -166,7 +182,7 @@ a:visited {
 }
 
 .oldWord{
-    color: rgb(195, 193, 197);
+    color: var(--text-colour);
 }
 
 .incorrectWord{
