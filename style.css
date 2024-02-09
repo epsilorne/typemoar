@@ -18,6 +18,7 @@ body {
     background-color: var(--bg-colour);
     font-family: "Space Mono", monospace;
     user-select: none;
+    min-height: 100vh;
 }
 
 div {
@@ -64,7 +65,7 @@ input {
 footer {
     user-select: all;
     color: var(--text-colour);
-    position: fixed;
+    position: absolute;
     bottom: 0;
     padding: 15px;
 }
