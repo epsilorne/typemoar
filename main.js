@@ -1,37 +1,37 @@
 // What mode is the test? 0 = words, 1 = time
-var testMode = 0;
+let testMode = 0;
 
-var wordsToGenerate;
-var testDuration;
-var wordsPerSentence = 10;
+let wordsToGenerate;
+let testDuration;
+let wordsPerSentence = 10;
 
-var wordDatabase;
-var timer;
+let wordDatabase;
+let timer;
 
 // Shorthand for the input field element
-var inputField;
+let inputField;
 
-var testStarted, testEnded;
+let testStarted, testEnded;
 
 // An array containing all characters (words) to be typed
-var words;
+let words;
 
 // The current word to be typed
-var targetWord;
+let targetWord;
 
 // Information about the current word, line and what word the line starts
-var currentIndex, currentLine, newLineIndex;
+let currentIndex, currentLine, newLineIndex;
 
 // Test stats
-var totalTime, totalMistakes, totalUncorrectedMistakes, correctCharacters, grossWPM, netWPM, bestWPM;
+let totalTime, totalMistakes, totalUncorrectedMistakes, charaCount, spaces, grossWPM, netWPM, bestWPM;
 
 // Mistakes are tracked per-word using a string representation
-var currentMistakes;
+let currentMistakes;
 
 
 // Gets the 10,000 word list and places it into an array, though it's janky
 function prepareWordsArray(){
-    var xmlHttp = new XMLHttpRequest();
+    const xmlHttp = new XMLHttpRequest();
     xmlHttp.open("GET", "https://raw.githubusercontent.com/epsilorne/typemoar/main/words.txt", false);
     xmlHttp.send();
     if(xmlHttp.status == 200){
@@ -50,8 +50,7 @@ function generateWords(count){
 
     // Create a span for each word in the array
     for(let i = oldWordCount; i < words.length; i++){
-        var span = document.createElement("span");
-    
+        let span = document.createElement("span");
         span.id = i;
         span.innerText = words[i] + " ";
         $("#targetText").append(span);
@@ -71,30 +70,27 @@ function finishTest(){
     if(testMode == 1){ totalTime = testDuration * 10; }
 
     // Calculating results
-    // Spaces are included in character count, but excluded in accuracy (to avoid inflation)
-    var spaces = wordsToGenerate - 1;
+    charaCount += spaces;
 
-    // TODO: Change charaCount so it only counts what has actually been typed
-    var charaCount = words.join("").length + spaces
-    var acc = (((charaCount - totalMistakes - spaces) / (charaCount - spaces)) * 100).toFixed(1);
-    var seconds = totalTime / 10;
-    var mins = seconds / 60;
+    // If the user has somehow not typed a word, use whatever they have typed for the calculations
+    if(charaCount == 0){ charaCount = inputField.prop("value").length || 1; }
+    acc = (((charaCount - totalMistakes - spaces) / (charaCount - spaces)) * 100).toFixed(1);
+    seconds = totalTime / 10;
+    mins = seconds / 60;
 
     grossWPM = (charaCount / 5) / mins;
     netWPM = grossWPM - (totalUncorrectedMistakes / mins);
 
     // Prevents negative WPM
     if(netWPM <= 0){ netWPM = 0; }
-
-    var setPB = false;
-
+    setPB = false;
     // Set a new best WPM if appropriate
     if(netWPM > bestWPM){ bestWPM = netWPM; localStorage.setItem("bestWPM", netWPM); setPB = true; }
 
-    var wpmResults = `WPM: ${Math.round(netWPM)}<br><small>(${Math.round(grossWPM)} raw)</small><br>`
-    var accTimeResults = `${acc}% Accuracy<br>${seconds} Seconds`
-    var gradeResults = `<h1>${calculateGrade(acc)}</h1>`
-    var recordResults = `Record: ${Math.round(bestWPM)}WPM`
+    const wpmResults = `WPM: ${Math.round(netWPM)}<br><small>(${Math.round(grossWPM)} raw)</small><br>`
+    const accTimeResults = `${acc}% Accuracy<br>${seconds} Seconds`
+    const gradeResults = `<h1>${calculateGrade(acc)}</h1>`
+    let recordResults = `Record: ${Math.round(bestWPM)}WPM`
 
     if(setPB){ recordResults += "<br><small>(that's a new record!)</small>"; }
     
@@ -110,7 +106,7 @@ function finishTest(){
 // Returns a letter-grade based on the user's accuracy
 // Not to be taken seriously!
 function calculateGrade(acc){
-    var grades = [
+    const grades = [
         {grade: 'SS', color: 'rgb(230, 203, 99)', thres: 100},
         {grade: 'S', color: 'rgb(230, 203, 99)', thres: 99},
         {grade: 'A', color: 'rgb(88, 191, 67)', thres: 98},
@@ -183,7 +179,8 @@ function setupTest(){
     totalTime = testMode == 0 ? 0 : -testDuration * 10;
     totalMistakes = 0;
     totalUncorrectedMistakes = 0;
-    correctCharacters = 0;
+    charaCount = 0;
+    spaces = 0;
     grossWPM = 0;
     setPB = false;
 
@@ -264,7 +261,7 @@ function updateTimer(){
 // Here, it's used to calculate uncorrected mistakes for each word
 function calculateDifference(input, target){
     const maxLength = Math.max(input.length, target.length);
-    var diffCount = 0;
+    let diffCount = 0;
     
     for(let i = 0; i < maxLength; i++){
         if(input.charAt(i) != target.charAt(i)){
@@ -298,7 +295,7 @@ function checkForInputs(){
     
     // Once we start typing, begin the test
     inputField.on("input", function(){
-        var currentInput = inputField.prop("value");
+        let currentInput = inputField.prop("value");
 
         if(!testStarted){
             testStarted = true;
@@ -308,12 +305,14 @@ function checkForInputs(){
         }
 
         if(!testEnded){
-            var index = currentInput.length - 1;
+            let index = currentInput.length - 1;
         
             // When the space key is pressed, move to the next word ONLY IF the user
             // has at least typed one character
             if(currentInput.charAt(index) === " "){
                 if(currentInput.length > 1){
+                    charaCount += targetWord.length;
+                    
                     // Remove the entered space from the input
                     currentInput = currentInput.trimEnd();
                     
@@ -324,20 +323,13 @@ function checkForInputs(){
                     }
                     inputField.prop("value", null);
 
-                    var oldMistakes = totalUncorrectedMistakes;
+                    const oldMistakes = totalUncorrectedMistakes;
 
                     // Add the uncorrected mistakes, then reset the mistakes counter
                     totalUncorrectedMistakes += calculateDifference(currentInput, targetWord);
                     currentMistakes = [];
 
-                    // Remove incorrect highlighting if all mistakes were fixed
-                    if(oldMistakes - totalUncorrectedMistakes == 0){
-                        $("#" + currentIndex).removeClass("incorrectWord");
-                        $("#" + currentIndex).addClass("currentWord");
-                    }
-                    // Otherwise use the old incorrect highlighting
-                    else{
-                        $("#" + currentIndex).removeClass("incorrectWord");
+                    if($("#" + currentIndex).hasClass("incorrectWord")){
                         $("#" + currentIndex).addClass("incorrectOldWord");
                     }
 
@@ -346,6 +338,7 @@ function checkForInputs(){
                         finishTest();
                     }
                     else{
+                        spaces++;
                         nextWord();
                     }
                 }
@@ -361,12 +354,12 @@ function checkForInputs(){
                     $("#" + currentIndex).addClass("currentWord");
                 }
                 
-                var inputChar = currentInput.charAt(index);
-                var targetChar = targetWord.charAt(index);
+                const inputChar = currentInput.charAt(index);
+                const targetChar = targetWord.charAt(index);
         
                 if(inputChar != targetChar){
                     // Create an string representation of the current mistake
-                    var mistake = index + inputChar + targetChar;
+                    const mistake = index + inputChar + targetChar;
 
                     // We check if the mistake has been registered yet, to prevent
                     // duplicates if the user attempts to correct it
@@ -379,12 +372,10 @@ function checkForInputs(){
                         totalMistakes++;
                     }
                 }
-                else{
-                    correctCharacters++;
-                }
 
                 // If the user has typed the last word correctly, automatically finish the test
                 if(currentInput == targetWord && currentIndex == wordsToGenerate - 1){
+                    charaCount += targetWord.length;
                     finishTest();
                 }
             }
