@@ -3,7 +3,7 @@ var testMode = 0;
 
 var wordsToGenerate;
 var testDuration;
-var wordsPerSentence = 8;
+var wordsPerSentence = 10;
 
 var wordDatabase;
 var timer;
@@ -39,33 +39,27 @@ function prepareWordsArray(){
     }
 }
 
-// TODO: Modify this method so we don't create duplicate spans
 // Randomly generates a given number of words as an array and string
-function generateWords(count){
+function generateWords(count){ 
+    // We keep track of the old word count so spans are only made for new words
+    oldWordCount = words.length;
+
     for(let i = 0; i < count; i++){
         words.push(wordDatabase[Math.floor(Math.random() * wordDatabase.length)]);
     }
 
     // Create a span for each word in the array
-    for(let i = 0; i < words.length; i++){
-        // If a span does not exist for the current word, generate it
-        if($("#" + i).length <= 0){
-            var span = document.createElement("span");
-        
-            span.id = i;
-            span.innerText = words[i] + " ";
-            $("#targetText").append(span);
-        }
+    for(let i = oldWordCount; i < words.length; i++){
+        var span = document.createElement("span");
+    
+        span.id = i;
+        span.innerText = words[i] + " ";
+        $("#targetText").append(span);
     }
 }
 
 function changeTestMode(){
-    if(testMode == 0){
-        testMode = 1;
-    }
-    else{
-        testMode = 0;
-    }
+    testMode = testMode == 0 ? 1 : 0;
 }
 
 function finishTest(){
@@ -74,10 +68,13 @@ function finishTest(){
 
     // Stop the timer
     clearTimeout(timer);
+    if(testMode == 1){ totalTime = testDuration * 10; }
 
     // Calculating results
     // Spaces are included in character count, but excluded in accuracy (to avoid inflation)
     var spaces = wordsToGenerate - 1;
+
+    // TODO: Change charaCount so it only counts what has actually been typed
     var charaCount = words.join("").length + spaces
     var acc = (((charaCount - totalMistakes - spaces) / (charaCount - spaces)) * 100).toFixed(1);
     var seconds = totalTime / 10;
@@ -151,8 +148,6 @@ function nextWord(){
         if(testMode == 1 && $("#" + newLineIndex).offset().top != $("#" + currentIndex).offset().top){
             oldLineIndex = newLineIndex;
             newLineIndex = currentIndex;
-        
-            // TODO: generateWords() except it doesn't generate the old ones
 
             generateWords(wordsPerSentence);
             wordsToGenerate += wordsPerSentence;
@@ -161,10 +156,7 @@ function nextWord(){
             // the actual words, as that will mess up test results
             for(let i = oldLineIndex; i < newLineIndex; i++){
                 $("#" + i).remove();
-                console.log("deleting span " + i);
             }
-
-            console.log("NEW LINE!");
         }
     }
 }
@@ -187,7 +179,8 @@ function setupTest(){
     currentLine = 0;
     newLineIndex = 0;
 
-    totalTime = 0;
+    // If the test-mode is time, the time starts negative and counts up
+    totalTime = testMode == 0 ? 0 : -testDuration * 10;
     totalMistakes = 0;
     totalUncorrectedMistakes = 0;
     correctCharacters = 0;
@@ -220,9 +213,11 @@ function setupTest(){
     // Below refers to the fixed-number of words test
     if(testMode == 0){
         $("#button" + wordsToGenerate).addClass("selectedButton");
+        $("#timerText").prop("innerHTML", "");
     }
     else{
         $("#button" + testDuration + "s").addClass("selectedButton");
+        $("#timerText").prop("innerHTML", testDuration + '.0"');
     }
 }
 
@@ -252,8 +247,17 @@ function generateTimeTest(duration){
 
 // Start and update the timer every 100ms
 function updateTimer(){
+    // Subtract or add time depending on the test mode
     totalTime++;
     timer = setTimeout(updateTimer, 100);
+
+    // Update the timer text and finish the test if appropriate
+    if(testMode == 1){
+        $("#timerText").prop("innerHTML", Math.abs(totalTime / 10).toFixed(1) + '"');
+        if(totalTime >= 0){
+            finishTest();
+        }
+    }
 }
 
 // Calculates the number of mismatching characters between strings

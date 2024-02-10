@@ -43,8 +43,9 @@ input {
     padding: 15px;
     margin-top: 15px;
     margin-bottom: 15px;
+    display: inline-block;
    
-    width: 100%;
+    width: 85%;
     border: transparent;
     border-radius: 15px;
     outline:  none;
@@ -169,6 +170,13 @@ a:visited {
     background-color: var(--secondary-button-colour);
     color: var(--button-text-colour);
     width: 100%;
+}
+
+.timer{
+    display: inline-block;
+    font-size: 24px;
+    color: var(--text-colour);
+    text-align: right;
 }
 
 .selectedButton{
