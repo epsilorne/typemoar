@@ -353,6 +353,10 @@ function checkForInputs(){
                     $("#" + currentIndex).removeClass("incorrectWord");
                     $("#" + currentIndex).addClass("currentWord");
                 }
+                else{
+                    $("#" + currentIndex).removeClass("currentWord");
+                    $("#" + currentIndex).addClass("incorrectWord");
+                }
                 
                 const inputChar = currentInput.charAt(index);
                 const targetChar = targetWord.charAt(index);
